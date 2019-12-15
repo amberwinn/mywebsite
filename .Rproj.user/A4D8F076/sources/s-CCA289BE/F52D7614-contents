@@ -1,0 +1,117 @@
+---
+title: "Project 1"
+author: "Amber Nguyen"
+date: "October 20, 2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 0. Introduction
+
+
+```{R}
+happy2015 <- read.csv("C:/Users/Amber/Desktop/2015.csv")
+suicides <- read.csv("C:/Users/Amber/Desktop/Copy of who_suicide_statistics.csv")
+library("dplyr")
+library("tidyr")
+library("tidyverse")
+library("ggplot2")
+```
+
+The two datasets I chose are from the website called Kaggle. The first one is named World Happiness Report which describes the happiness rank of 157 countries in 2016. There are 13 variables in this dataset which include: country, region, happiness rank, happiness score,
+upper and lower confidence interval, GDP per capita, family, health, freedom, trust, generosity, and dystopian residual. The variables of this dataset were used to determine the overall happiness rank of each country. The second dataset is named WHO Suicide Statistics which includes the suicide rates of different countries from 1979-2016. There are 6 variables in this dataset which include: country, year, sex, age group, number of suicides, and population size. The variables of this dataset were used to show the suicide ratesof a country over time. The reason I chose these datasets is because I was interested in how countries differedfrom each other. I also believe that mental health is very important, and I wanted to see if happiness could be attributed to the amount of suicides in each country. I think that there may be some associations between happiness and suicide rates, with lower amounts of suicides being correlated to higher happiness rank.
+
+### 1. Tidying
+
+
+
+```{R}
+newsuicides <- suicides %>% pivot_wider(names_from="age", values_from="suicides_no")
+newsuicides$suicide_count <- rowSums(newsuicides[, c("15-24 years", "25-34 years", "35-54 years", "5-14 years", "55-74 years", "75+ years")], na.rm = TRUE) 
+
+newsuicides %>% group_by(country, year) %>% mutate(sum_suicides=sum(suicide_count))
+newsuicides2 <- newsuicides %>% select(c(-"15-24 years", -"25-34 years", -"35-54 years", -"5-14 years", -"55-74 years", -"75+ years")) %>% group_by(country, year)
+glimpse(newsuicides2)
+                                          
+```
+
+My datasets were pretty tidy, but I wanted to untidy the age column, so that I could determine the total number of suicides per country. I used the pivot_wider function to separate the age column into 5 different columns based on age group. Then, I created a new column with the total number of suicides. I realize I probably could have used mutate or summarize, but decided to keep my original code using rowSums. Then, I decided to create a new dataset dropping the age groups as they make my data harder to examine. 
+
+### 2. Joining
+
+
+```{R}
+happi_suicides <- left_join(happy2015, newsuicides2, by=c("Country"="country"))%>%filter(year=="2015")
+glimpse(happi_suicides)
+
+no_matches <- anti_join(happy2015, newsuicides2, by=c("Country"="country"))
+no_matches2 <- anti_join(newsuicides2, happy2015, by=c("country"="Country"))
+```
+
+I chose to use a left join as there were many countries in the suicides dataset that were not included in the happy2015 dataset. This allows the countries from happy2015 to be kept while dropping the countries from the suicides dataset that are not included in happy2015. This dropped 56 cases in the happy2015 dataset as the countries were not found in the suicides dataset. There were 6955 cases in the suicides dataset that were dropped as those countries did not match the happy2015 dataset. Lastly, I filtered by the year 2015 as the suicide data is only from that year. This join does limit the amount of data left since there were a lot of countries that did not appear in one or the other dataset, and some countries may not have suicide data in 2015.
+
+### 3. Wrangling
+
+
+```{R}
+newdata <- happi_suicides %>% group_by(Country, sex,happiness_score,economy_gdp)%>% summarize(sum_suicides=sum(suicide_count),sum_population=sum(population)) %>% ungroup() 
+
+glimpse(newdata)
+ 
+sexdata <- newdata %>% group_by(Country,sex) %>% summarize(mean_suicides=mean(sum_suicides), mean_population=mean(sum_population,na.rm=TRUE),sd_suicides=sd(sum_suicides),sd_population=sd(sum_population,na.rm=TRUE), median_suicides=median(sum_suicides), median_pop=median(sum_population,na.rm=TRUE), mean_happy=mean(happiness_score)) %>% mutate(suicides_per_pop=mean_suicides/mean_population)
+
+glimpse(sexdata)
+
+countrydata <- newdata %>% group_by(Country,happiness_score) %>% summarize(mean_suicides=mean(sum_suicides), mean_population=mean(sum_population,na.rm=TRUE), sd_suicides=sd(sum_suicides),sd_population=sd(sum_population,na.rm=TRUE), median_suicides=median(sum_suicides), median_pop=median(sum_population,na.rm=TRUE)) %>% mutate(suicides_per_pop=mean_suicides/mean_population)
+glimpse(countrydata)
+
+countrydata %>% arrange(desc(happiness_score))
+countrydata %>% arrange(suicides_per_pop)
+```
+First, I consolidated my joined dataset into newdata by grouping by country, sex, happiness score, and GDP. Then, I totalled the suicide counts and populations and created a new column for each of these using summarize. Next, I performed a series of summary statistics with grouping by sex and grouping by country. With grouping by sex, I found that there are many more male suicides than female suicides, and that the average Happiness Score for all of the countries regardless of gender is around 6. For the grouping by country, I found that Switzerland has the highest Happiness Score, but does not have the lowest overall average number of suicides. However, the population sizes vary, so I calculated suicides per population and the top Happiness Scores are relatively low with suicides per population, but there is not an overall trend. 
+
+### 4. Visualizing
+
+```{R}
+
+options(scipen = 999)
+
+countrydata %>% arrange(desc(happiness_score))%>% ggplot(aes                                    (happiness_score,suicides_per_pop,color=Country))+geom_point()+ scale_x_continuous(limits = c(4, 8), breaks = seq(4, 8, by = 0.5))+ ggtitle("Relationship of Suicides per Population and Happiness Score of a Country") + ylab("Suicides per Population") + xlab("Happiness Score")+theme_minimal()+theme(legend.position="none")
+```
+
+The first plot shows the relationship between suicides per population and happiness scores according to country by color. According to the graph, the countries with highest happiness scores, do not have the lowest suicide rate per population. It appears as though the countries around the median happiness score of ~6 have the higher suicide rate per population. There are also not many suicides per population with lower happiness scores which is surprising.
+
+```{R}
+sexdata %>% ggplot(aes(sex,suicides_per_pop,fill=sex))+
+  geom_bar(stat="summary",fun.y = "mean")+facet_wrap(~Country)+ggtitle("Relationship of Suicides per Population of Each Sex of a Country")+
+  ylab("Suicides per Population")+xlab("Sex")+theme_minimal()+theme(legend.position="none")
+
+```
+
+The second plot shows the relationship between suicides per population and sex, and they are faceted by country. I attempted to add happiness score in comparison to suicides per population in regards to sex, but both sexes have the same happiness score as happiness score does not come from the suicides dataset. Thus, this plot shows that males have more suicides per population than females. Many countries have similar suicide rates among males and females, as the bars are generally at the same level for a lot of countries. This is seen with the 7th column of graphs, all of those countries look similar in their suicide data.  
+
+### 5. Dimensionality Reduction
+
+```{R}
+new_nums <- newdata %>%select_if(is.numeric)%>%scale
+rownames(new_nums)<-newdata$Country
+new_pca<-princomp(na.omit(new_nums))
+names(new_pca)
+summary(new_pca, loadings = T)
+eigen(cor(na.omit(new_nums)))
+
+new_pca$loadings[1:4,1:2]%>%as.data.frame%>%rownames_to_column%>%
+ggplot()+geom_hline(aes(yintercept=0),lty=2)+
+ geom_vline(aes(xintercept=0),lty=2)+ylab("PC2")+xlab("PC1")+
+ geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col="red")+
+ geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))
+
+ggplot()+geom_point(aes(new_pca$scores[,1], new_pca$scores[,2]))+xlab("PC1")+ylab("PC2")
+```
+
+I could not determine which countries were attributed to each component as it gave me an error, but according to the plot of loadings the PCA analysis shows that happiness score and GDP have high correlation which makes sense as GDP was used to calculate the score. It also shows that suicides and populations are highly correlated, but also that suicides and happiness score are oppositely correlated. I am not completely sure how to interpret my PC scores plot, but it seems that PC1 is separating many dots on the left from 3 dots on the right side. For PC2, there are many dots that cannot be separated from each other, so maybe there are correlations in my data that I cannot see. 

@@ -1,0 +1,238 @@
+---
+title: "Project 1"
+author: "Amber Nguyen"
+date: "October 20, 2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+
+<div id="introduction" class="section level3">
+<h3>0. Introduction</h3>
+<pre class="r"><code>happy2015 &lt;- read.csv(&quot;C:/Users/Amber/Desktop/Website/content/2015.csv&quot;)
+suicides &lt;- read.csv(&quot;C:/Users/Amber/Desktop/Website/content/Copy of who_suicide_statistics.csv&quot;)
+library(&quot;dplyr&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(&quot;tidyr&quot;)
+library(&quot;tidyverse&quot;)</code></pre>
+<pre><code>## -- Attaching packages -------------------------------------- tidyverse 1.2.1 --</code></pre>
+<pre><code>## v ggplot2 3.2.1     v purrr   0.3.3
+## v tibble  2.1.3     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.4.0</code></pre>
+<pre><code>## -- Conflicts ----------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
+<p>The two datasets I chose are from the website called Kaggle. The first one is named World Happiness Report which describes the happiness rank of 157 countries in 2016. There are 13 variables in this dataset which include: country, region, happiness rank, happiness score,
+upper and lower confidence interval, GDP per capita, family, health, freedom, trust, generosity, and dystopian residual. The variables of this dataset were used to determine the overall happiness rank of each country. The second dataset is named WHO Suicide Statistics which includes the suicide rates of different countries from 1979-2016. There are 6 variables in this dataset which include: country, year, sex, age group, number of suicides, and population size. The variables of this dataset were used to show the suicide ratesof a country over time. The reason I chose these datasets is because I was interested in how countries differedfrom each other. I also believe that mental health is very important, and I wanted to see if happiness could be attributed to the amount of suicides in each country. I think that there may be some associations between happiness and suicide rates, with lower amounts of suicides being correlated to higher happiness rank.</p>
+</div>
+<div id="tidying" class="section level3">
+<h3>1. Tidying</h3>
+<pre class="r"><code>newsuicides &lt;- suicides %&gt;% pivot_wider(names_from=&quot;age&quot;, values_from=&quot;suicides_no&quot;)
+newsuicides$suicide_count &lt;- rowSums(newsuicides[, c(&quot;15-24 years&quot;, &quot;25-34 years&quot;, &quot;35-54 years&quot;, &quot;5-14 years&quot;, &quot;55-74 years&quot;, &quot;75+ years&quot;)], na.rm = TRUE) 
+
+newsuicides %&gt;% group_by(country, year) %&gt;% mutate(sum_suicides=sum(suicide_count))</code></pre>
+<pre><code>## # A tibble: 39,180 x 12
+## # Groups:   country, year [3,648]
+##    country  year sex   population `15-24 years` `25-34 years` `35-54 years`
+##    &lt;fct&gt;   &lt;int&gt; &lt;fct&gt;      &lt;int&gt;         &lt;int&gt;         &lt;int&gt;         &lt;int&gt;
+##  1 Albania  1985 fema~     277900            NA            NA            NA
+##  2 Albania  1985 fema~     246800            NA            NA            NA
+##  3 Albania  1985 fema~     267500            NA            NA            NA
+##  4 Albania  1985 fema~     298300            NA            NA            NA
+##  5 Albania  1985 fema~     138700            NA            NA            NA
+##  6 Albania  1985 fema~      34200            NA            NA            NA
+##  7 Albania  1985 male      301400            NA            NA            NA
+##  8 Albania  1985 male      264200            NA            NA            NA
+##  9 Albania  1985 male      296700            NA            NA            NA
+## 10 Albania  1985 male      325800            NA            NA            NA
+## # ... with 39,170 more rows, and 5 more variables: `5-14 years` &lt;int&gt;, `55-74
+## #   years` &lt;int&gt;, `75+ years` &lt;int&gt;, suicide_count &lt;dbl&gt;, sum_suicides &lt;dbl&gt;</code></pre>
+<pre class="r"><code>newsuicides2 &lt;- newsuicides %&gt;% select(c(-&quot;15-24 years&quot;, -&quot;25-34 years&quot;, -&quot;35-54 years&quot;, -&quot;5-14 years&quot;, -&quot;55-74 years&quot;, -&quot;75+ years&quot;)) %&gt;% group_by(country, year)
+glimpse(newsuicides2)</code></pre>
+<pre><code>## Observations: 39,180
+## Variables: 5
+## Groups: country, year [3,648]
+## $ country       &lt;fct&gt; Albania, Albania, Albania, Albania, Albania, Albania,...
+## $ year          &lt;int&gt; 1985, 1985, 1985, 1985, 1985, 1985, 1985, 1985, 1985,...
+## $ sex           &lt;fct&gt; female, female, female, female, female, female, male,...
+## $ population    &lt;int&gt; 277900, 246800, 267500, 298300, 138700, 34200, 301400...
+## $ suicide_count &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...</code></pre>
+<p>My datasets were pretty tidy, but I wanted to untidy the age column, so that I could determine the total number of suicides per country. I used the pivot_wider function to separate the age column into 5 different columns based on age group. Then, I created a new column with the total number of suicides. I realize I probably could have used mutate or summarize, but decided to keep my original code using rowSums. Then, I decided to create a new dataset dropping the age groups as they make my data harder to examine.</p>
+</div>
+<div id="joining" class="section level3">
+<h3>2. Joining</h3>
+<pre class="r"><code>happi_suicides &lt;- left_join(happy2015, newsuicides2, by=c(&quot;Country&quot;=&quot;country&quot;))%&gt;%filter(year==&quot;2015&quot;)</code></pre>
+<pre><code>## Warning: Column `Country`/`country` joining factors with different levels,
+## coercing to character vector</code></pre>
+<pre class="r"><code>glimpse(happi_suicides)</code></pre>
+<pre><code>## Observations: 736
+## Variables: 16
+## $ Country                       &lt;chr&gt; &quot;Switzerland&quot;, &quot;Switzerland&quot;, &quot;Switze...
+## $ Region                        &lt;fct&gt; Western Europe, Western Europe, Weste...
+## $ Happiness.Rank                &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2...
+## $ happiness_score               &lt;dbl&gt; 7.587, 7.587, 7.587, 7.587, 7.587, 7....
+## $ Standard.Error                &lt;dbl&gt; 0.03411, 0.03411, 0.03411, 0.03411, 0...
+## $ economy_gdp                   &lt;dbl&gt; 1.39651, 1.39651, 1.39651, 1.39651, 1...
+## $ Family                        &lt;dbl&gt; 1.34951, 1.34951, 1.34951, 1.34951, 1...
+## $ Health..Life.Expectancy.      &lt;dbl&gt; 0.94143, 0.94143, 0.94143, 0.94143, 0...
+## $ Freedom                       &lt;dbl&gt; 0.66557, 0.66557, 0.66557, 0.66557, 0...
+## $ Trust..Government.Corruption. &lt;dbl&gt; 0.41978, 0.41978, 0.41978, 0.41978, 0...
+## $ Generosity                    &lt;dbl&gt; 0.29678, 0.29678, 0.29678, 0.29678, 0...
+## $ Dystopia.Residual             &lt;dbl&gt; 2.51738, 2.51738, 2.51738, 2.51738, 2...
+## $ year                          &lt;int&gt; 2015, 2015, 2015, 2015, 2015, 2015, 2...
+## $ sex                           &lt;fct&gt; female, female, female, female, femal...
+## $ population                    &lt;int&gt; 462559, 577973, 1227126, 390910, 9222...
+## $ suicide_count                 &lt;dbl&gt; 20, 24, 111, 2, 82, 41, 62, 80, 242, ...</code></pre>
+<pre class="r"><code>no_matches &lt;- anti_join(happy2015, newsuicides2, by=c(&quot;Country&quot;=&quot;country&quot;))</code></pre>
+<pre><code>## Warning: Column `Country`/`country` joining factors with different levels,
+## coercing to character vector</code></pre>
+<pre class="r"><code>no_matches2 &lt;- anti_join(newsuicides2, happy2015, by=c(&quot;country&quot;=&quot;Country&quot;))</code></pre>
+<pre><code>## Warning: Column `country`/`Country` joining factors with different levels,
+## coercing to character vector</code></pre>
+<p>I chose to use a left join as there were many countries in the suicides dataset that were not included in the happy2015 dataset. This allows the countries from happy2015 to be kept while dropping the countries from the suicides dataset that are not included in happy2015. This dropped 56 cases in the happy2015 dataset as the countries were not found in the suicides dataset. There were 6955 cases in the suicides dataset that were dropped as those countries did not match the happy2015 dataset. Lastly, I filtered by the year 2015 as the suicide data is only from that year. This join does limit the amount of data left since there were a lot of countries that did not appear in one or the other dataset, and some countries may not have suicide data in 2015.</p>
+</div>
+<div id="wrangling" class="section level3">
+<h3>3. Wrangling</h3>
+<pre class="r"><code>newdata &lt;- happi_suicides %&gt;% group_by(Country, sex,happiness_score,economy_gdp)%&gt;% summarize(sum_suicides=sum(suicide_count),sum_population=sum(population)) %&gt;% ungroup() 
+
+glimpse(newdata)</code></pre>
+<pre><code>## Observations: 126
+## Variables: 6
+## $ Country         &lt;chr&gt; &quot;Albania&quot;, &quot;Albania&quot;, &quot;Argentina&quot;, &quot;Argentina&quot;, &quot;Ar...
+## $ sex             &lt;fct&gt; female, male, female, male, female, male, female, m...
+## $ happiness_score &lt;dbl&gt; 4.959, 4.959, 6.574, 6.574, 4.350, 4.350, 7.284, 7....
+## $ economy_gdp     &lt;dbl&gt; 0.87867, 0.87867, 1.05351, 1.05351, 0.76821, 0.7682...
+## $ sum_suicides    &lt;dbl&gt; 0, 0, 604, 2469, 19, 55, 735, 2292, 290, 961, 0, 0,...
+## $ sum_population  &lt;int&gt; 1345679, 1374005, 20346129, 19353495, 1472585, 1322...</code></pre>
+<pre class="r"><code>sexdata &lt;- newdata %&gt;% group_by(Country,sex) %&gt;% summarize(mean_suicides=mean(sum_suicides), mean_population=mean(sum_population,na.rm=TRUE),sd_suicides=sd(sum_suicides),sd_population=sd(sum_population,na.rm=TRUE), median_suicides=median(sum_suicides), median_pop=median(sum_population,na.rm=TRUE), mean_happy=mean(happiness_score)) %&gt;% mutate(suicides_per_pop=mean_suicides/mean_population)
+
+glimpse(sexdata)</code></pre>
+<pre><code>## Observations: 126
+## Variables: 10
+## Groups: Country [63]
+## $ Country          &lt;chr&gt; &quot;Albania&quot;, &quot;Albania&quot;, &quot;Argentina&quot;, &quot;Argentina&quot;, &quot;A...
+## $ sex              &lt;fct&gt; female, male, female, male, female, male, female, ...
+## $ mean_suicides    &lt;dbl&gt; 0, 0, 604, 2469, 19, 55, 735, 2292, 290, 961, 0, 0...
+## $ mean_population  &lt;dbl&gt; 1345679, 1374005, 20346129, 19353495, 1472585, 132...
+## $ sd_suicides      &lt;dbl&gt; NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, ...
+## $ sd_population    &lt;dbl&gt; NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, ...
+## $ median_suicides  &lt;dbl&gt; 0, 0, 604, 2469, 19, 55, 735, 2292, 290, 961, 0, 0...
+## $ median_pop       &lt;int&gt; 1345679, 1374005, 20346129, 19353495, 1472585, 132...
+## $ mean_happy       &lt;dbl&gt; 4.959, 4.959, 6.574, 6.574, 4.350, 4.350, 7.284, 7...
+## $ suicides_per_pop &lt;dbl&gt; 0.000000e+00, 0.000000e+00, 2.968624e-05, 1.275739...</code></pre>
+<pre class="r"><code>countrydata &lt;- newdata %&gt;% group_by(Country,happiness_score) %&gt;% summarize(mean_suicides=mean(sum_suicides), mean_population=mean(sum_population,na.rm=TRUE), sd_suicides=sd(sum_suicides),sd_population=sd(sum_population,na.rm=TRUE), median_suicides=median(sum_suicides), median_pop=median(sum_population,na.rm=TRUE)) %&gt;% mutate(suicides_per_pop=mean_suicides/mean_population)
+glimpse(countrydata)</code></pre>
+<pre><code>## Observations: 63
+## Variables: 9
+## Groups: Country [63]
+## $ Country          &lt;chr&gt; &quot;Albania&quot;, &quot;Argentina&quot;, &quot;Armenia&quot;, &quot;Australia&quot;, &quot;A...
+## $ happiness_score  &lt;dbl&gt; 4.959, 6.574, 4.350, 7.284, 7.200, 5.813, 6.937, 6...
+## $ mean_suicides    &lt;dbl&gt; 0.0, 1536.5, 37.0, 1513.5, 625.5, 0.0, 933.5, 5581...
+## $ mean_population  &lt;dbl&gt; 1359842.0, 19849812.0, 1397667.5, 11120392.5, 4109...
+## $ sd_suicides      &lt;dbl&gt; 0.00000, 1318.75415, 25.45584, 1100.96526, 474.468...
+## $ sd_population    &lt;dbl&gt; 20029.5067, 701898.2326, 105949.3446, 114720.2971,...
+## $ median_suicides  &lt;dbl&gt; 0.0, 1536.5, 37.0, 1513.5, 625.5, 0.0, 933.5, 5581...
+## $ median_pop       &lt;dbl&gt; 1359842.0, 19849812.0, 1397667.5, 11120392.5, 4109...
+## $ suicides_per_pop &lt;dbl&gt; 0.000000e+00, 7.740627e-05, 2.647268e-05, 1.361013...</code></pre>
+<pre class="r"><code>countrydata %&gt;% arrange(desc(happiness_score))</code></pre>
+<pre><code>## # A tibble: 63 x 9
+## # Groups:   Country [63]
+##    Country happiness_score mean_suicides mean_population sd_suicides
+##    &lt;chr&gt;             &lt;dbl&gt;         &lt;dbl&gt;           &lt;dbl&gt;       &lt;dbl&gt;
+##  1 Switze~            7.59          536.        3946251        363. 
+##  2 Iceland            7.56           20          154277         12.7
+##  3 Denmark            7.53          282         2691530        153. 
+##  4 Norway             7.52          295         2441454.       148. 
+##  5 Finland            7.41          366.        2590898.       272. 
+##  6 Nether~            7.38          936.        8028671        489. 
+##  7 Sweden             7.36          591         4557262        368. 
+##  8 Austra~            7.28         1514.       11120392.      1101. 
+##  9 Israel             7.28          171         3758090        139. 
+## 10 Austria            7.2           626.        4109693        474. 
+## # ... with 53 more rows, and 4 more variables: sd_population &lt;dbl&gt;,
+## #   median_suicides &lt;dbl&gt;, median_pop &lt;dbl&gt;, suicides_per_pop &lt;dbl&gt;</code></pre>
+<pre class="r"><code>countrydata %&gt;% arrange(suicides_per_pop)</code></pre>
+<pre><code>## # A tibble: 63 x 9
+## # Groups:   Country [63]
+##    Country happiness_score mean_suicides mean_population sd_suicides
+##    &lt;chr&gt;             &lt;dbl&gt;         &lt;dbl&gt;           &lt;dbl&gt;       &lt;dbl&gt;
+##  1 Albania            4.96           0          1359842          0  
+##  2 Belarus            5.81           0          4455174.         0  
+##  3 Egypt              4.19          24         39442583         15.6
+##  4 South ~            4.64         241         24813730        192. 
+##  5 Turkey             5.33         766         35940232        522. 
+##  6 Armenia            4.35          37          1397668.        25.5
+##  7 Turkme~            5.55          66.5        2443257         36.1
+##  8 Qatar              6.61          33          1177074.        33.9
+##  9 Panama             6.79          55          1791691         50.9
+## 10 Iran               4.69        1186         36230500.       679. 
+## # ... with 53 more rows, and 4 more variables: sd_population &lt;dbl&gt;,
+## #   median_suicides &lt;dbl&gt;, median_pop &lt;dbl&gt;, suicides_per_pop &lt;dbl&gt;</code></pre>
+<p>First, I consolidated my joined dataset into newdata by grouping by country, sex, happiness score, and GDP. Then, I totalled the suicide counts and populations and created a new column for each of these using summarize. Next, I performed a series of summary statistics with grouping by sex and grouping by country. With grouping by sex, I found that there are many more male suicides than female suicides, and that the average Happiness Score for all of the countries regardless of gender is around 6. For the grouping by country, I found that Switzerland has the highest Happiness Score, but does not have the lowest overall average number of suicides. However, the population sizes vary, so I calculated suicides per population and the top Happiness Scores are relatively low with suicides per population, but there is not an overall trend.</p>
+</div>
+<div id="visualizing" class="section level3">
+<h3>4. Visualizing</h3>
+<pre class="r"><code>options(scipen = 999)
+
+countrydata %&gt;% arrange(desc(happiness_score))%&gt;% ggplot(aes                                    (happiness_score,suicides_per_pop,color=Country))+geom_point()+ scale_x_continuous(limits = c(4, 8), breaks = seq(4, 8, by = 0.5))+ ggtitle(&quot;Relationship of Suicides per Population and Happiness Score of a Country&quot;) + ylab(&quot;Suicides per Population&quot;) + xlab(&quot;Happiness Score&quot;)+theme_minimal()+theme(legend.position=&quot;none&quot;)</code></pre>
+<pre><code>## Warning: Removed 2 rows containing missing values (geom_point).</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>The first plot shows the relationship between suicides per population and happiness scores according to country by color. According to the graph, the countries with highest happiness scores, do not have the lowest suicide rate per population. It appears as though the countries around the median happiness score of ~6 have the higher suicide rate per population. There are also not many suicides per population with lower happiness scores which is surprising.</p>
+<pre class="r"><code>sexdata %&gt;% ggplot(aes(sex,suicides_per_pop,fill=sex))+
+  geom_bar(stat=&quot;summary&quot;,fun.y = &quot;mean&quot;)+facet_wrap(~Country)+ggtitle(&quot;Relationship of Suicides per Population of Each Sex of a Country&quot;)+
+  ylab(&quot;Suicides per Population&quot;)+xlab(&quot;Sex&quot;)+theme_minimal()+theme(legend.position=&quot;none&quot;)</code></pre>
+<pre><code>## Warning: Removed 4 rows containing non-finite values (stat_summary).</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>The second plot shows the relationship between suicides per population and sex, and they are faceted by country. I attempted to add happiness score in comparison to suicides per population in regards to sex, but both sexes have the same happiness score as happiness score does not come from the suicides dataset. Thus, this plot shows that males have more suicides per population than females. Many countries have similar suicide rates among males and females, as the bars are generally at the same level for a lot of countries. This is seen with the 7th column of graphs, all of those countries look similar in their suicide data.</p>
+</div>
+<div id="dimensionality-reduction" class="section level3">
+<h3>5. Dimensionality Reduction</h3>
+<pre class="r"><code>new_nums &lt;- newdata %&gt;%select_if(is.numeric)%&gt;%scale
+rownames(new_nums)&lt;-newdata$Country
+new_pca&lt;-princomp(na.omit(new_nums))
+names(new_pca)</code></pre>
+<pre><code>## [1] &quot;sdev&quot;     &quot;loadings&quot; &quot;center&quot;   &quot;scale&quot;    &quot;n.obs&quot;    &quot;scores&quot;   &quot;call&quot;</code></pre>
+<pre class="r"><code>summary(new_pca, loadings = T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2    Comp.3     Comp.4
+## Standard deviation     1.3659789 1.1916187 0.6333826 0.50219434
+## Proportion of Variance 0.4736713 0.3604655 0.1018407 0.06402252
+## Cumulative Proportion  0.4736713 0.8341368 0.9359775 1.00000000
+## 
+## Loadings:
+##                 Comp.1 Comp.2 Comp.3 Comp.4
+## happiness_score  0.372  0.616  0.677  0.154
+## economy_gdp      0.356  0.594 -0.689 -0.214
+## sum_suicides     0.622 -0.343 -0.185  0.679
+## sum_population   0.589 -0.387  0.184 -0.685</code></pre>
+<pre class="r"><code>eigen(cor(na.omit(new_nums)))</code></pre>
+<pre><code>## eigen() decomposition
+## $values
+## [1] 1.8779472 1.4552575 0.4152091 0.2515863
+## 
+## $vectors
+##            [,1]       [,2]       [,3]       [,4]
+## [1,] -0.4089504  0.5746232  0.6947545 -0.1410107
+## [2,] -0.4065151  0.5794745 -0.6791429  0.1942156
+## [3,] -0.5904450 -0.3831008 -0.1706486 -0.6895560
+## [4,] -0.5646943 -0.4327254  0.1641957  0.6833072</code></pre>
+<pre class="r"><code>new_pca$loadings[1:4,1:2]%&gt;%as.data.frame%&gt;%rownames_to_column%&gt;%
+ggplot()+geom_hline(aes(yintercept=0),lty=2)+
+ geom_vline(aes(xintercept=0),lty=2)+ylab(&quot;PC2&quot;)+xlab(&quot;PC1&quot;)+
+ geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col=&quot;red&quot;)+
+ geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>ggplot()+geom_point(aes(new_pca$scores[,1], new_pca$scores[,2]))+xlab(&quot;PC1&quot;)+ylab(&quot;PC2&quot;)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<p>I could not determine which countries were attributed to each component as it gave me an error, but according to the plot of loadings the PCA analysis shows that happiness score and GDP have high correlation which makes sense as GDP was used to calculate the score. It also shows that suicides and populations are highly correlated, but also that suicides and happiness score are oppositely correlated. I am not completely sure how to interpret my PC scores plot, but it seems that PC1 is separating many dots on the left from 3 dots on the right side. For PC2, there are many dots that cannot be separated from each other, so maybe there are correlations in my data that I cannot see.</p>
+</div>

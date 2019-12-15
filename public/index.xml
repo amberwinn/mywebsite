@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Amber Nguyen</title>
+    <link>/</link>
+    <description>Recent content on Amber Nguyen</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Sun, 15 Dec 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Python - Regular Expressions</title>
+      <link>/blog/python/</link>
+      <pubDate>Sun, 15 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/python/</guid>
+      <description>This is a blog post about python and what I have learned in class. Specifically, I thought that regular expressions were really interesting, and I thought that I would share the examples that we learned here.
+Regular expressions (Regex) allows you to extract specific information by searching for a match that defines a pattern. I think this is very useful, and it was also cool to learn about!
+Here are some of the common regex symbols and their meanings that we learned:Here is a simple example of regex from my homework assignment:</description>
+    </item>
+    
+    <item>
+      <title>Project 1</title>
+      <link>/project1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project1/</guid>
+      <description>0. Introductionhappy2015 &amp;lt;- read.csv(&amp;quot;C:/Users/Amber/Desktop/Website/content/2015.csv&amp;quot;)suicides &amp;lt;- read.csv(&amp;quot;C:/Users/Amber/Desktop/Website/content/Copy of who_suicide_statistics.csv&amp;quot;)library(&amp;quot;dplyr&amp;quot;)## ## Attaching package: &amp;#39;dplyr&amp;#39;## The following objects are masked from &amp;#39;package:stats&amp;#39;:## ## filter, lag## The following objects are masked from &amp;#39;package:base&amp;#39;:## ## intersect, setdiff, setequal, unionlibrary(&amp;quot;tidyr&amp;quot;)library(&amp;quot;tidyverse&amp;quot;)## -- Attaching packages -------------------------------------- tidyverse 1.2.1 --## v ggplot2 3.2.1 v purrr 0.3.3## v tibble 2.1.3 v stringr 1.4.0## v readr 1.</description>
+    </item>
+    
+    <item>
+      <title>Project 2: Modeling, Testing, and Predicting</title>
+      <link>/project2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project2/</guid>
+      <description>Amber Nguyen aqn246IntroductionThe dataset that I am using for this project is called the Weights of College Students Backpacks. It includes 9 total variables with 100 observations, but the main variables I will be working with are BackpackWeight, BodyWeight, Ratio, BackProblems, Sex, and Year. BackpackWeight is a measure of each student’s backpack weight in pounds. BodyWeight is a measure of each student’s body weight in pounds. Ratio is the ratio of backpack weight to body weight.</description>
+    </item>
+    
+    <item>
+      <title>Projects</title>
+      <link>/projects/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/</guid>
+      <description>Projects Here are some projects I have been working on:
+  Project 1
+  Project 2
+  </description>
+    </item>
+    
+    <item>
+      <title>Resume</title>
+      <link>/resume/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/resume/</guid>
+      <description>Amber NguyenAmber Nguyen was born in Houston, Texas, and currently attends theUniversity of Texas at Austin. She is a Biology Major, graduating in May 2020, hoping to pursue a career in dentistry. She wishes to make a difference in people’s lives through her dedication to community service and the healthcare field.
+Other than the sciences, Amber Nguyen is also interested in the arts. Sheenjoys listening to music, singing, and dancing in her free time.</description>
+    </item>
+    
+  </channel>
+</rss>

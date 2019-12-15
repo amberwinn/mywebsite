@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blogs on Amber Nguyen</title>
+    <link>/blog/</link>
+    <description>Recent content in Blogs on Amber Nguyen</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Sun, 15 Dec 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Python - Regular Expressions</title>
+      <link>/blog/python/</link>
+      <pubDate>Sun, 15 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/python/</guid>
+      <description>This is a blog post about python and what I have learned in class. Specifically, I thought that regular expressions were really interesting, and I thought that I would share the examples that we learned here.
+Regular expressions (Regex) allows you to extract specific information by searching for a match that defines a pattern. I think this is very useful, and it was also cool to learn about!
+Here are some of the common regex symbols and their meanings that we learned:Here is a simple example of regex from my homework assignment:</description>
+    </item>
+    
+  </channel>
+</rss>

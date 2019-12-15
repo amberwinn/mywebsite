@@ -1,0 +1,72 @@
+---
+title: "Resume"
+author: "Amber Nguyen"
+date: "12/15/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Amber Nguyen
+Amber Nguyen was born in Houston, Texas, and currently attends the
+University of Texas at Austin. She is a Biology Major, graduating in May 2020, hoping to pursue a career in dentistry. She wishes to make a difference in people’s lives through her dedication to community service and the healthcare field.
+
+Other than the sciences, Amber Nguyen is also interested in the arts. She
+enjoys listening to music, singing, and dancing in her free time.
+
+## Contact Information:
+- (281)-303-1146
+- ambernguyen97@utexas.edu
+
+### EDUCATION
+The University of Texas at Austin — Bachelor of Science and Arts
+  AUGUST 2016 - MAY 2020
+  
+    Biology Major, Business Foundations Minor, and Pre-Health
+    Professions Certificate
+
+### COMMUNITY SERVICE
+Dell Seton Medical Center — Volunteer
+  
+  SEPTEMBER 2018 - MAY 2019
+
+    Assisted with patient reception and maintained supply cart 
+    inventory in the Emergency Department.
+
+Be the Change Global Outreach - Myanmar Medical Mission
+Trip — Volunteer
+  
+  MARCH 2019
+    
+    Provided medical and dental aid to underprivileged Burmese 
+    people on a week-long medical expedition.
+
+Manos de Cristo Dental Clinic — Volunteer
+  
+  JANUARY 2019 - PRESENT
+
+    Sanitize dental instruments and help with data entry during 
+    periodontal exams.
+
+Micah 6 Food Pantry — Volunteer
+  
+  AUGUST 2019 - PRESENT
+
+    Assist with giving free groceries to those who need it by
+    bagging groceries or providing guidance in choosing food items.
+
+### SKILLS
+- Proficient with MS Word, Excel, PowerPoint, Publisher, Google Drive, and RStudio.
+- Strong adaptability to new environments.
+- Adept in customer service and interpersonal skills.
+- Self-motivated with excellent time management.
+- Responsible, honest and hardworking.
+
+### LANGUAGES
+Conversant in Spanish and Vietnamese.
+
+### AWARDS
+- AP Scholar with Honor
+- University Honors

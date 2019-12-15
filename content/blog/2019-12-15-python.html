@@ -1,0 +1,45 @@
+---
+title: Python - Regular Expressions
+author: Amber Nguyen
+date: '2019-12-15'
+slug: python
+categories: []
+tags: []
+description: ''
+---
+
+
+
+<p>This is a blog post about python and what I have learned in class. Specifically, I thought that regular expressions were really interesting, and I thought that I would share the examples that we learned here.</p>
+<p>Regular expressions (Regex) allows you to extract specific information by searching for a match that defines a pattern. I think this is very useful, and it was also cool to learn about!</p>
+<p>Here are some of the common regex symbols and their meanings that we learned:
+<img src="/blog/2019-12-15-python_files/regex.PNG" /></p>
+<p>Here is a simple example of regex from my homework assignment:</p>
+<pre class="r"><code>library(reticulate)</code></pre>
+<pre class="python"><code>import re
+string1=&quot;We have to extract these numbers 12, 47, 48 The integers numbers are also interesting: 189 2036 314\&#39;,\&#39; is a separator, so please extract these numbers 125,789,1450 and also these 564,90456 We like to offer you 7890$ per month in order to complete this task... we are joking&quot;
+print(string1)</code></pre>
+<pre><code>## We have to extract these numbers 12, 47, 48 The integers numbers are also interesting: 189 2036 314&#39;,&#39; is a separator, so please extract these numbers 125,789,1450 and also these 564,90456 We like to offer you 7890$ per month in order to complete this task... we are joking</code></pre>
+<pre class="python"><code>re.findall(r&quot;\d+&quot;,string1)</code></pre>
+<pre><code>## [&#39;12&#39;, &#39;47&#39;, &#39;48&#39;, &#39;189&#39;, &#39;2036&#39;, &#39;314&#39;, &#39;125&#39;, &#39;789&#39;, &#39;1450&#39;, &#39;564&#39;, &#39;90456&#39;, &#39;7890&#39;]</code></pre>
+<p>The code shows an example of regular expressions as it was able to find all of the numbers using “d”, 1 or more times with the + sign from string1. This is a useful trick when you want to tidy up or find specific data!</p>
+<p>Here is another example that is more complicated:</p>
+<pre class="python"><code>string3=r&quot;Fedora Core ftp \
+Fedora Extras http ftp rsync\
+ftp://ftp7.br.FreeBSD.org/pub/FreeBSD/ (ftp)\
+ftp://ftp3.de.FreeBSD.org/pub/FreeBSD/ (ftp)\
+ftp://ftp.is.FreeBSD.org/pub/FreeBSD/ (ftp / rsync)\
+ftp://ftp4.jp.FreeBSD.org/pub/FreeBSD/ (ftp)\
+ftp://ftp.no.FreeBSD.org/pub/FreeBSD/ (ftp / rsync)\
+*\
+ftp://ftp3.no.FreeBSD.org/pub/FreeBSD/ (ftp)\
+ftp://ftp.pt.FreeBSD.org/pub/FreeBSD/ (ftp)\
+ftp://ftp1.ro.FreeBSD.org/pub/FreeBSD/ (ftp / ftpv6)\
+ftp://ftp3.es.FreeBSD.org/pub/FreeBSD/ (ftp)\
+ftp://ftp2.tw.FreeBSD.org/pub/FreeBSD/ (ftp / ftpv6 / http / httpv6 / rsync / rsyncv6)\
+ftp://ftp6.uk.FreeBSD.org/pub/FreeBSD/ (ftp)\
+ftp://ftp6.us.FreeBSD.org/pub/FreeBSD/ (ftp / http)&quot;
+re.findall(r&quot;ftp://\S*/FreeBSD/&quot;,string3)</code></pre>
+<pre><code>## [&#39;ftp://ftp7.br.FreeBSD.org/pub/FreeBSD/&#39;, &#39;ftp://ftp3.de.FreeBSD.org/pub/FreeBSD/&#39;, &#39;ftp://ftp.is.FreeBSD.org/pub/FreeBSD/&#39;, &#39;ftp://ftp4.jp.FreeBSD.org/pub/FreeBSD/&#39;, &#39;ftp://ftp.no.FreeBSD.org/pub/FreeBSD/&#39;, &#39;ftp://ftp3.no.FreeBSD.org/pub/FreeBSD/&#39;, &#39;ftp://ftp.pt.FreeBSD.org/pub/FreeBSD/&#39;, &#39;ftp://ftp1.ro.FreeBSD.org/pub/FreeBSD/&#39;, &#39;ftp://ftp3.es.FreeBSD.org/pub/FreeBSD/&#39;, &#39;ftp://ftp2.tw.FreeBSD.org/pub/FreeBSD/&#39;, &#39;ftp://ftp6.uk.FreeBSD.org/pub/FreeBSD/&#39;, &#39;ftp://ftp6.us.FreeBSD.org/pub/FreeBSD/&#39;]</code></pre>
+<p>This code finds a match for the pattern after <a href="ftp://" class="uri">ftp://</a> and before /FreeBSD/ that is non-whitespace, specified by “S”, and 0 or more times specified by *.</p>
+<p>There are many other ways to use regex as well, as this blog post is just a small snippet of what we have learned with python!</p>

@@ -1,0 +1,12 @@
+install.packages("blogdown")
+blogdown::install_hugo()
+blogdown::new_site(theme="nurlansu/hugo-sustain")
+blogdown:::new_post_addin()
+blogdown::serve_site()
+install.packages("reticulate")
+
+
+reticulate::py_config()
+library(reticulate)
+use_python("/usr/local/bin/python")
+py_config()
